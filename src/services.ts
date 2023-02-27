@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { AxiosInstanceClass } from './axios';
 
 require('dotenv').config();
@@ -31,11 +32,10 @@ function getTime(...filter: any[]): Promise<Response> | undefined {
   const url = process.env.SUNSET_URL + filter.filter((x) => x).join('&');
 
   try {
-    const res: Promise<Response> = AxiosInstanceClass.getInstance().request({
+    const res = AxiosInstanceClass.getInstance().request({
       url: url,
       method: 'get',
     });
-
     return res;
   } catch (err) {
     console.error(err);
