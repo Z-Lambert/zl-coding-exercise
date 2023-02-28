@@ -27,7 +27,11 @@ interface Results {
   astronomical_twilight_begin: string;
   astronomical_twilight_end: string;
 }
-
+/**
+ * This function makes a get request to the sunset API with specified filters
+ * @param filterOptions filter options for API URL
+ * @returns Promise of a Response JSON
+ */
 function getTime(...filterOptions: string[]): Promise<Response> | undefined {
   if (!process.env.SUNSET_URL) {
     console.error('env SUNSET_URL required');
@@ -51,7 +55,11 @@ const LAT_MAX = 180;
 const LONG_MIN = 180;
 const LONG_MAX = 360;
 const POINT_DECIMAL_PLACES = 7;
-
+/**
+ * This function generates n random longitude and latitude points
+ * @param n number of random points to generate
+ * @returns array of Points
+ */
 export function generateRandomPoints(n: number): Points[] {
   return [...Array(n)].map(() => {
     return {
@@ -67,6 +75,11 @@ export function generateRandomPoints(n: number): Points[] {
   });
 }
 
+/**
+ * This function analyses an array of times to find the earliest
+ * @param response array of Results
+ * @returns a single Results object
+ */
 export function returnEarliestSunrise(response: Results[]): Results | null {
   return response.reduce((acc: Results | null, curr) => {
     if (acc === null) {
@@ -82,6 +95,11 @@ export function returnEarliestSunrise(response: Results[]): Results | null {
   }, null);
 }
 
+/**
+ * This function converts 12h AM PM formated times into 24h format
+ * @param time12h in format HH:MM:SS AM/PM
+ * @returns HH:MM:SS
+ */
 const convertTime12hto24h = (time12h: string): string => {
   const [time, modifier] = time12h.split(' ');
   let [hours, minutes, seconds] = time.split(':');
@@ -95,6 +113,12 @@ const convertTime12hto24h = (time12h: string): string => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+/**
+ * This function fetches the times for each lat/long in the given array, making batch requests of batch_size size.
+ * @param points array of points
+ * @param batch_size number of requests in each batch, default as 5
+ * @returns promise of Results[], array of response data
+ */
 export const fetchAllTimes = async (
   points: Points[],
   batch_size = 5
